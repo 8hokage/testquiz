@@ -1,25 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
+import { Button } from './components/common/Button/Button';
+import { getQuiz } from './api/getQuiz';
+import { Quiz } from './components/Quiz/Quiz';
+import { IQuizContext, QuizStatus, useQuizContext } from './contexts/QuizContext';
 
 function App() {
+  const {data, setData, status} = useQuizContext() as IQuizContext;
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadQuizData = async () => {
+    setIsLoading(true);
+    try {
+    const res = getQuiz();
+    setData(res);
+    setIsLoading(false);
+    } catch(e: any) {
+   
+    }
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main className="main">
+      {!isLoading && data !== null && <Button onClick={loadQuizData} type='button'>Start quiz</Button>}
+      {!isLoading 
+        && data 
+        && <Quiz />}
+      {status === QuizStatus.FAILED && <p>Test failed</p>}
+    </main>
   );
 }
 

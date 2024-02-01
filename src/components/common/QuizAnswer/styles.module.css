@@ -1,0 +1,17 @@
+.answer {
+  border: 1px solid blue;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.answer:hover {
+  background: #efefef;
+}
+
+.answer + .answer {
+  margin-top: 20px;
+}
+
+.wrong {
+  background: red;
+}
