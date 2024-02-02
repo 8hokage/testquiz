@@ -1,17 +1,21 @@
 .answer {
-  border: 1px solid blue;
+  border: 1px solid #56AEFF;
   border-radius: 4px;
   cursor: pointer;
+  padding: 10px;
+  text-align: center;
 }
 
-.answer:hover {
+.answer:not(.wrong):not(.right):hover {
   background: #efefef;
 }
 
-.answer + .answer {
-  margin-top: 20px;
+.wrong {
+  background: #F3ABAB;
+  border: 1px solid #F3ABAB;
 }
 
-.wrong {
-  background: red;
+.right {
+  background: #ABF3B2;
+  border: 1px solid #ABF3B2;
 }

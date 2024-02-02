@@ -1,10 +1,11 @@
 import { FC, PropsWithChildren } from "react";
-
+import cls from 'classnames';
+import styles from './styles.module.css';
 
 export interface IButtonProps {
-  type: 'button' | 'submit',
+  type?: 'button' | 'submit',
   className?: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export const Button: FC<IButtonProps & PropsWithChildren> = ({
@@ -13,7 +14,7 @@ export const Button: FC<IButtonProps & PropsWithChildren> = ({
   return (
     <button 
       type={type} 
-      className={className} 
+      className={cls(styles.button, className)} 
       onClick={onClick}
     >
       {children}

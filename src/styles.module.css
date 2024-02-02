@@ -1,0 +1,21 @@
+.main {
+  height: 100vh;
+}
+
+.quizContainer {
+  padding-top: 40px;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  width: 200px;
+  font-size: 24px;
+  margin: auto;
+  display: block;
+}

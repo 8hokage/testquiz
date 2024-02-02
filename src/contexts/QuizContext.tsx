@@ -2,17 +2,18 @@ import { PropsWithChildren, createContext, useContext, useEffect, useRef, useSta
 import { IQuestion } from '../types/quiz';
 
 export enum QuizStatus {
+  DEFAULT,
   RUNNING,
-  FAILED,
-  SUCCEED,
+  FINISHED,
 }
 
 export interface IQuizContext {
   data: IQuestion[] | undefined;
-  time: NodeJS.Timer | undefined;
+  score: number;
   setData: (data: IQuestion[]) => void;
   currentQuestionIdx: number;
   status: QuizStatus;
+  setStatus: (newStatus: QuizStatus) => void;
   onAnswer: (isRight: boolean) => void;
   onTimeEnd: () => void;
 }
@@ -23,54 +24,46 @@ export const useQuizContext = () => useContext(QuizContext);
 
 export const QuizContextWrapper: React.FC<PropsWithChildren> = ({children}) => {
   const [data, setData] = useState<IQuestion[]>();
+  const [score, setScore] = useState(0);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
-  const [status, setStatus] = useState(QuizStatus.RUNNING);
-  const timer = useRef<NodeJS.Timeout>();
-  const expirationTimeRef = useRef(0);
+  const [status, setStatus] = useState(QuizStatus.DEFAULT);
 
   useEffect(() => {
-    if (!data) {
-      return;
+    if (status === QuizStatus.DEFAULT) {
+      setScore(0);
+      setCurrentQuestionIdx(0);
     }
-    
-    clearTimeout(timer.current);
-    expirationTimeRef.current = data[currentQuestionIdx].answerTime || 5000;
-    timer.current = setTimeout(() => {
-      onFailAnswer();
-    }, data[currentQuestionIdx].answerTime || 5000);
+  }, [status]);
 
-    return () => {
-      clearTimeout(timer.current);
-    }
-  }, [currentQuestionIdx, data]);
-
-  const onSuccess = () => {
-    setStatus(QuizStatus.SUCCEED);
+  const onFinish = () => {
+    setStatus(QuizStatus.FINISHED);
   }
 
-  const onFailAnswer = () => {
-    setStatus(QuizStatus.FAILED);
+  const changeAnswer = () => {
+    if (currentQuestionIdx < data?.length! - 1) {
+      setCurrentQuestionIdx(currentQuestionIdx + 1);
+    } else if (currentQuestionIdx === data?.length! - 1) {
+      onFinish();
+    }
   }
 
   const onTimeEnd = () => {
-    setStatus(QuizStatus.FAILED);
+    changeAnswer();
   }
 
   const onAnswer = (isRight: boolean) => {
-    if (status === QuizStatus.FAILED) {
+    if (status !== QuizStatus.RUNNING) {
       return;
     }
 
-    if (isRight && currentQuestionIdx < data?.length! ) {
-      setCurrentQuestionIdx(currentQuestionIdx + 1);
-    } else if (isRight && currentQuestionIdx === data?.length) {
-        onSuccess();
-    } else {
-      onFailAnswer();
+    if (isRight) {
+      setScore(score + 1);
     }
+
+    changeAnswer();
   }
 
-  return <QuizContext.Provider value={{data, time: timer.current , setData, onAnswer, onTimeEnd, status, currentQuestionIdx}}>
+  return <QuizContext.Provider value={{data, score, setData, onAnswer, onTimeEnd, status, setStatus, currentQuestionIdx}}>
     {children}
     </QuizContext.Provider>;
 }

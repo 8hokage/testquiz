@@ -1,22 +1,49 @@
-import { FC, useState } from "react"
-import { IQuestion, IQuiz } from "../../types/quiz";
+import { FC, useEffect, useState } from "react"
 import { QuizQuestion } from "../QuizQuestion/QuizQuestion";
-import { IQuizContext, useQuizContext } from "../../contexts/QuizContext";
+import { IQuizContext, QuizStatus, useQuizContext } from "../../contexts/QuizContext";
+import styles from './styles.module.css';
+import { SuccessModal } from "../common/SuccessModal/SuccessModal";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
+export const Quiz: FC = () => {
+  const {data, currentQuestionIdx, status, setStatus} = useQuizContext() as IQuizContext;
+  const [isOpen, setIsOpen] = useState(false);
 
-export interface IQuizProps {
+  useGSAP(() => {
+    gsap.from('#quiz', {
+      opacity: 0,
+      duration: 0.2,
+    })
+  });
 
-}
+  useEffect(() => {
+    setStatus(QuizStatus.RUNNING);
+  }, [setStatus]);
 
-export const Quiz: FC<IQuizProps> = () => {
-  const {data, currentQuestionIdx} = useQuizContext() as IQuizContext;
+  useEffect(() => {
+    if (status !== QuizStatus.RUNNING) {
+      setIsOpen(true);
+    }
+  }, [status])
+  
+  const onFinish = () => {
+    setIsOpen(false);
+
+    gsap.to('#quiz', {
+      opacity: 0,
+      duration: 0.05,
+    }).then(() => {
+      setStatus(QuizStatus.DEFAULT);
+    })
+  }
 
   return (
-    <div>
-      <div>time</div>
-      <QuizQuestion 
+    <div id="quiz" className={styles.quiz}>
+      <QuizQuestion
         question={data![currentQuestionIdx]} 
       />
+      <SuccessModal onAction={onFinish} isOpen={isOpen} />
     </div>
   );
 }

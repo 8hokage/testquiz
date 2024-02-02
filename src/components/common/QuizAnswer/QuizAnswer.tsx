@@ -1,26 +1,31 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { IAnswer } from "../../../types/quiz";
 import styles from './styles.module.css';
-import { IQuizContext, QuizStatus, useQuizContext } from "../../../contexts/QuizContext";
 import cls from 'classnames';
 
 export interface IQuizAnswerProps {
   answer: IAnswer;
+  onAnswer: (answer: IAnswer) => void;
+  isResultShown: boolean;
+  id: string,
 }
 
-export const QuizAnswer: FC<IQuizAnswerProps> = ({ answer: {text, isRight = false}}) => {
-  const {onAnswer, status} = useQuizContext() as IQuizContext;
-  const [isWrong, setIsWrong] = useState(false);
+export const QuizAnswer: FC<IQuizAnswerProps> = ({ answer, onAnswer, isResultShown, id}) => {
   const onChoseAnswer = () => {
-    if (!isRight && status !== QuizStatus.FAILED) {
-      setIsWrong(true);
-    }
-    onAnswer(isRight)
+    onAnswer(answer);
   }
 
-  return <div className={cls(styles.answer, {
-    [styles.wrong]: isWrong,
-  })} tabIndex={0} onClick={onChoseAnswer}>
-    {text}
-  </div>
+  return (
+    <div 
+      id={id} 
+      className={cls(styles.answer, {
+        [styles.right]: isResultShown && answer.isRight,
+        [styles.wrong]: isResultShown && !answer.isRight,
+      })} 
+      tabIndex={0} 
+      onClick={onChoseAnswer}
+    >
+      {answer.text}
+    </div>
+  );
 }

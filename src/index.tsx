@@ -12,6 +12,7 @@ root.render(
   <React.StrictMode>
     <QuizContextWrapper>
       <App />
+      <div id="modalRoot" />
     </QuizContextWrapper>
   </React.StrictMode>
 );
