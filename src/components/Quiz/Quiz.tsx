@@ -32,7 +32,7 @@ export const Quiz: FC = () => {
 
     gsap.to('#quiz', {
       opacity: 0,
-      duration: 0.05,
+      duration: 0.2,
     }).then(() => {
       setStatus(QuizStatus.DEFAULT);
     })
